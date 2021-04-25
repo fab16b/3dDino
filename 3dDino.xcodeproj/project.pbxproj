@@ -14,6 +14,7 @@
 		175CD4B72635FC990030F77C /* libGLEW.2.2.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 175CD4B52635FC990030F77C /* libGLEW.2.2.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		175CD4BA2635FCAF0030F77C /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 175CD4B92635FCAF0030F77C /* libglfw.3.3.dylib */; };
 		175CD4BB2635FCAF0030F77C /* libglfw.3.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 175CD4B92635FCAF0030F77C /* libglfw.3.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		E67653DB26360DFF0090549B /* basic_cube_scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E67653DA26360DFF0090549B /* basic_cube_scene.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,6 +48,7 @@
 		175CD4B32635FC820030F77C /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		175CD4B52635FC990030F77C /* libGLEW.2.2.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLEW.2.2.0.dylib; path = ../../../../../../../usr/local/Cellar/glew/2.2.0_1/lib/libGLEW.2.2.0.dylib; sourceTree = "<group>"; };
 		175CD4B92635FCAF0030F77C /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = ../../../../../../../usr/local/Cellar/glfw/3.3.2/lib/libglfw.3.3.dylib; sourceTree = "<group>"; };
+		E67653DA26360DFF0090549B /* basic_cube_scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = basic_cube_scene.cpp; path = "../../Basic camera  copy 2/Dino2/basic_cube_scene.cpp"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				175CD4A82635FC740030F77C /* main.cpp */,
+				E67653DA26360DFF0090549B /* basic_cube_scene.cpp */,
 			);
 			path = 3dDino;
 			sourceTree = "<group>";
@@ -158,6 +161,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				175CD4A92635FC740030F77C /* main.cpp in Sources */,
+				E67653DB26360DFF0090549B /* basic_cube_scene.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
