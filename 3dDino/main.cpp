@@ -2,7 +2,7 @@
 //  main.cpp
 //  3dDino
 //
-//  Created by Felix Mbikogbia  on 4/25/21.
+//  Created by Felix Mbikogbia and Abigail Verhelle  on 4/25/21.
 //
 #include <iostream>
 #include <GLUT/GLUT.h>
