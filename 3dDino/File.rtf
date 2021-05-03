@@ -1,0 +1,637 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2578
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;\f2\fnil\fcharset0 Menlo-Bold;
+}
+{\colortbl;\red255\green255\blue255;\red255\green255\blue255;\red31\green31\blue36;\red252\green95\blue163;
+\red93\green216\blue255;\red108\green121\blue134;\red65\green161\blue192;\red208\green191\blue105;\red158\green241\blue221;
+\red103\green183\blue164;\red103\green183\blue164;\red208\green168\blue255;\red161\green103\blue230;\red158\green241\blue221;
+\red253\green143\blue63;\red252\green106\blue93;\red208\green191\blue105;}
+{\*\expandedcolortbl;;\csgenericrgb\c100000\c100000\c100000\c85000;\csgenericrgb\c12054\c12284\c14131;\csgenericrgb\c98839\c37355\c63833;
+\csgenericrgb\c36295\c84643\c99897;\csgenericrgb\c42394\c47462\c52518;\csgenericrgb\c25490\c63137\c75294;\csgenericrgb\c81498\c74939\c41233;\csgenericrgb\c62145\c94386\c86819;
+\csgenericrgb\c40538\c71705\c64209;\csgenericrgb\c40392\c71765\c64314;\csgenericrgb\c81681\c65692\c99927;\csgenericrgb\c63137\c40392\c90196;\csgenericrgb\c61961\c94510\c86667;
+\csgenericrgb\c99216\c56078\c24706;\csgenericrgb\c98912\c41558\c36568;\csgenericrgb\c81569\c74902\c41177;}
+\margl1440\margr1440\vieww9000\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \
+\
+Camera \
+Light \
+World \
+Dino \
+	- movement \
+\
+\
+\
+\
+\
+\
+this is just so I don;t lose this. just in case \
+\
+\pard\tx642\pardeftab642\pardirnatural\partightenfactor0
+
+\f1\fs26 \cf2 \cb3 \
+
+\f2\b \cf4 enum
+\f1\b0 \cf2  \cf5 Camera_Movement\cf2  \{\
+    FORWARD,\
+    BACKWARD,\
+    LEFT,\
+    RIGHT\
+\};\
+\
+\cf6 // Default camera values\cf2 \
+
+\f2\b \cf4 const
+\f1\b0 \cf2  
+\f2\b \cf4 float
+\f1\b0 \cf2  \cf7 YAW\cf2          = -\cf8 90.0f\cf2 ;\
+
+\f2\b \cf4 const
+\f1\b0 \cf2  
+\f2\b \cf4 float
+\f1\b0 \cf2  \cf7 PITCH\cf2        =  \cf8 0.0f\cf2 ;\
+
+\f2\b \cf4 const
+\f1\b0 \cf2  
+\f2\b \cf4 float
+\f1\b0 \cf2  \cf7 SPEED\cf2        =  \cf8 2.5f\cf2 ;\
+
+\f2\b \cf4 const
+\f1\b0 \cf2  
+\f2\b \cf4 float
+\f1\b0 \cf2  \cf7 SENSITIVITY\cf2  =  \cf8 0.1f\cf2 ;\
+
+\f2\b \cf4 const
+\f1\b0 \cf2  
+\f2\b \cf4 float
+\f1\b0 \cf2  \cf7 ZOOM\cf2         =  \cf8 45.0f\cf2 ;\
+\
+\
+\cf6 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL\cf2 \
+
+\f2\b \cf4 class
+\f1\b0 \cf2  \cf5 Camera\cf2 \
+\{\
+
+\f2\b \cf4 public
+\f1\b0 \cf2 :\
+    \cf6 // camera Attributes\cf2 \
+    \cf9 glm\cf2 ::\cf9 vec3\cf2  \cf7 Position\cf2 ;\
+    \cf9 glm\cf2 ::\cf9 vec3\cf2  \cf7 Front\cf2 ;\
+    \cf9 glm\cf2 ::\cf9 vec3\cf2  \cf7 Up\cf2 ;\
+    \cf9 glm\cf2 ::\cf9 vec3\cf2  \cf7 Right\cf2 ;\
+    \cf9 glm\cf2 ::\cf9 vec3\cf2  \cf7 WorldUp\cf2 ;\
+    \cf6 // euler Angles\cf2 \
+    
+\f2\b \cf4 float
+\f1\b0 \cf2  \cf7 Yaw\cf2 ;\
+    
+\f2\b \cf4 float
+\f1\b0 \cf2  \cf7 Pitch\cf2 ;\
+    \cf6 // camera options\cf2 \
+    
+\f2\b \cf4 float
+\f1\b0 \cf2  \cf7 MovementSpeed\cf2 ;\
+    
+\f2\b \cf4 float
+\f1\b0 \cf2  \cf7 MouseSensitivity\cf2 ;\
+    
+\f2\b \cf4 float
+\f1\b0 \cf2  \cf7 Zoom\cf2 ;\
+\
+    \cf6 // constructor with vectors\cf2 \
+    \cf7 Camera\cf2 (\cf9 glm\cf2 ::\cf9 vec3\cf2  position = \cf9 glm\cf2 ::\cf9 vec3\cf2 (\cf8 0.0f\cf2 , \cf8 0.0f\cf2 , \cf8 0.0f\cf2 ), \cf9 glm\cf2 ::\cf9 vec3\cf2  up = \cf9 glm\cf2 ::\cf9 vec3\cf2 (\cf8 0.0f\cf2 , \cf8 1.0f\cf2 , \cf8 0.0f\cf2 ), 
+\f2\b \cf4 float
+\f1\b0 \cf2  yaw = \cf10 YAW\cf2 , 
+\f2\b \cf4 float
+\f1\b0 \cf2  pitch = \cf10 PITCH\cf2 ) : \cf10 Front\cf2 (\cf9 glm\cf2 ::\cf9 vec3\cf2 (\cf8 0.0f\cf2 , \cf8 0.0f\cf2 , -\cf8 1.0f\cf2 )), \cf10 MovementSpeed\cf2 (\cf10 SPEED\cf2 ), \cf10 MouseSensitivity\cf2 (\cf10 SENSITIVITY\cf2 ), \cf10 Zoom\cf2 (\cf10 ZOOM\cf2 )\
+    \{\
+        \cf10 Position\cf2  = position;\
+        \cf10 WorldUp\cf2  = up;\
+        \cf10 Yaw\cf2  = yaw;\
+        \cf10 Pitch\cf2  = pitch;\
+        \cf11 updateCameraVectors\cf2 ();\
+    \}\
+    \cf6 // constructor with scalar values\cf2 \
+    \cf7 Camera\cf2 (
+\f2\b \cf4 float
+\f1\b0 \cf2  posX, 
+\f2\b \cf4 float
+\f1\b0 \cf2  posY, 
+\f2\b \cf4 float
+\f1\b0 \cf2  posZ, 
+\f2\b \cf4 float
+\f1\b0 \cf2  upX, 
+\f2\b \cf4 float
+\f1\b0 \cf2  upY, 
+\f2\b \cf4 float
+\f1\b0 \cf2  upZ, 
+\f2\b \cf4 float
+\f1\b0 \cf2  yaw, 
+\f2\b \cf4 float
+\f1\b0 \cf2  pitch) : \cf10 Front\cf2 (\cf9 glm\cf2 ::\cf9 vec3\cf2 (\cf8 0.0f\cf2 , \cf8 0.0f\cf2 , -\cf8 1.0f\cf2 )), \cf10 MovementSpeed\cf2 (\cf10 SPEED\cf2 ), \cf10 MouseSensitivity\cf2 (\cf10 SENSITIVITY\cf2 ), \cf10 Zoom\cf2 (\cf10 ZOOM\cf2 )\
+    \{\
+        \cf10 Position\cf2  = \cf9 glm\cf2 ::\cf9 vec3\cf2 (posX, posY, posZ);\
+        \cf10 WorldUp\cf2  = \cf9 glm\cf2 ::\cf9 vec3\cf2 (upX, upY, upZ);\
+        \cf10 Yaw\cf2  = yaw;\
+        \cf10 Pitch\cf2  = pitch;\
+        \cf11 updateCameraVectors\cf2 ();\
+    \}\
+\
+    \cf6 // returns the view matrix calculated using Euler Angles and the LookAt Matrix\cf2 \
+    \cf9 glm\cf2 ::\cf9 mat4\cf2  \cf7 GetViewMatrix\cf2 ()\
+    \{\
+        
+\f2\b \cf4 return
+\f1\b0 \cf2  \cf9 glm\cf2 ::\cf11 lookAt\cf2 (\cf10 Position\cf2 , \cf10 Position\cf2  + \cf10 Front\cf2 , \cf10 Up\cf2 );\
+    \}\
+\
+    \cf6 // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)\cf2 \
+    
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 ProcessKeyboard\cf2 (\cf9 Camera_Movement\cf2  direction, 
+\f2\b \cf4 float
+\f1\b0 \cf2  deltaTime)\
+    \{\
+        
+\f2\b \cf4 float
+\f1\b0 \cf2  velocity = \cf10 MovementSpeed\cf2  * deltaTime;\
+        
+\f2\b \cf4 if
+\f1\b0 \cf2  (direction == \cf10 FORWARD\cf2 )\
+            \cf10 Position\cf2  += \cf10 Front\cf2  * velocity;\
+        
+\f2\b \cf4 if
+\f1\b0 \cf2  (direction == \cf10 BACKWARD\cf2 )\
+            \cf10 Position\cf2  -= \cf10 Front\cf2  * velocity;\
+        
+\f2\b \cf4 if
+\f1\b0 \cf2  (direction == \cf10 LEFT\cf2 )\
+            \cf10 Position\cf2  -= \cf10 Right\cf2  * velocity;\
+        
+\f2\b \cf4 if
+\f1\b0 \cf2  (direction == \cf10 RIGHT\cf2 )\
+            \cf10 Position\cf2  += \cf10 Right\cf2  * velocity;\
+    \}\
+\
+    \cf6 // processes input received from a mouse input system. Expects the offset value in both the x and y direction.\cf2 \
+    
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 ProcessMouseMovement\cf2 (
+\f2\b \cf4 float
+\f1\b0 \cf2  xoffset, 
+\f2\b \cf4 float
+\f1\b0 \cf2  yoffset, \cf12 GLboolean\cf2  constrainPitch = 
+\f2\b \cf4 true
+\f1\b0 \cf2 )\
+    \{\
+        xoffset *= \cf10 MouseSensitivity\cf2 ;\
+        yoffset *= \cf10 MouseSensitivity\cf2 ;\
+\
+        \cf10 Yaw\cf2    += xoffset;\
+        \cf10 Pitch\cf2  += yoffset;\
+\
+        \cf6 // make sure that when pitch is out of bounds, screen doesn't get flipped\cf2 \
+        
+\f2\b \cf4 if
+\f1\b0 \cf2  (constrainPitch)\
+        \{\
+            
+\f2\b \cf4 if
+\f1\b0 \cf2  (\cf10 Pitch\cf2  > \cf8 89.0f\cf2 )\
+                \cf10 Pitch\cf2  = \cf8 89.0f\cf2 ;\
+            
+\f2\b \cf4 if
+\f1\b0 \cf2  (\cf10 Pitch\cf2  < -\cf8 89.0f\cf2 )\
+                \cf10 Pitch\cf2  = -\cf8 89.0f\cf2 ;\
+        \}\
+\
+        \cf6 // update Front, Right and Up Vectors using the updated Euler angles\cf2 \
+        \cf11 updateCameraVectors\cf2 ();\
+    \}\
+\
+    \cf6 // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis\cf2 \
+    
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 ProcessMouseScroll\cf2 (
+\f2\b \cf4 float
+\f1\b0 \cf2  yoffset)\
+    \{\
+        \cf10 Zoom\cf2  -= (
+\f2\b \cf4 float
+\f1\b0 \cf2 )yoffset;\
+        
+\f2\b \cf4 if
+\f1\b0 \cf2  (\cf10 Zoom\cf2  < \cf8 1.0f\cf2 )\
+            \cf10 Zoom\cf2  = \cf8 1.0f\cf2 ;\
+        
+\f2\b \cf4 if
+\f1\b0 \cf2  (\cf10 Zoom\cf2  > \cf8 45.0f\cf2 )\
+            \cf10 Zoom\cf2  = \cf8 45.0f\cf2 ;\
+    \}\
+\
+
+\f2\b \cf4 private
+\f1\b0 \cf2 :\
+    \cf6 // calculates the front vector from the Camera's (updated) Euler Angles\cf2 \
+    
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 updateCameraVectors\cf2 ()\
+    \{\
+        \cf6 // calculate the new Front vector\cf2 \
+        \cf9 glm\cf2 ::\cf9 vec3\cf2  front;\
+        front.\cf10 x\cf2  = \cf13 cos\cf2 (\cf9 glm\cf2 ::\cf11 radians\cf2 (\cf10 Yaw\cf2 )) * \cf13 cos\cf2 (\cf9 glm\cf2 ::\cf11 radians\cf2 (\cf10 Pitch\cf2 ));\
+        front.\cf10 y\cf2  = \cf13 sin\cf2 (\cf9 glm\cf2 ::\cf11 radians\cf2 (\cf10 Pitch\cf2 ));\
+        front.\cf10 z\cf2  = \cf13 sin\cf2 (\cf9 glm\cf2 ::\cf11 radians\cf2 (\cf10 Yaw\cf2 )) * \cf13 cos\cf2 (\cf9 glm\cf2 ::\cf11 radians\cf2 (\cf10 Pitch\cf2 ));\
+        \cf10 Front\cf2  = \cf9 glm\cf2 ::\cf11 normalize\cf2 (front);\
+        \cf6 // also re-calculate the Right and Up vector\cf2 \
+        \cf10 Right\cf2  = \cf9 glm\cf2 ::\cf11 normalize\cf2 (\cf9 glm\cf2 ::\cf11 cross\cf2 (\cf10 Front\cf2 , \cf10 WorldUp\cf2 ));  \cf6 // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.\cf2 \
+        \cf10 Up\cf2     = \cf9 glm\cf2 ::\cf11 normalize\cf2 (\cf9 glm\cf2 ::\cf11 cross\cf2 (\cf10 Right\cf2 , \cf10 Front\cf2 ));\
+    \}\
+\};\
+
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 init\cf2 (
+\f2\b \cf4 void
+\f1\b0 \cf2 );\
+
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 display\cf2 (
+\f2\b \cf4 void
+\f1\b0 \cf2 );\
+
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 keyboard\cf2 (
+\f2\b \cf4 unsigned
+\f1\b0 \cf2  
+\f2\b \cf4 char
+\f1\b0 \cf2 , 
+\f2\b \cf4 int
+\f1\b0 \cf2 , 
+\f2\b \cf4 int
+\f1\b0 \cf2 );\
+
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 resize\cf2 (
+\f2\b \cf4 int
+\f1\b0 \cf2 , 
+\f2\b \cf4 int
+\f1\b0 \cf2 );\
+
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 drawcube\cf2 (
+\f2\b \cf4 int
+\f1\b0 \cf2 , 
+\f2\b \cf4 int
+\f1\b0 \cf2 , 
+\f2\b \cf4 int
+\f1\b0 \cf2 );\
+\
+
+\f2\b \cf4 int
+\f1\b0 \cf2  \cf7 is_depth\cf2 ; \cf6 /* depth testing flag */\cf2 \
+\cf14 Camera\cf2  \cf7 cam\cf2 ;\
+
+\f2\b \cf4 int
+\f1\b0 \cf2  \cf7 main\cf2  (
+\f2\b \cf4 int
+\f1\b0 \cf2  argc, 
+\f2\b \cf4 char
+\f1\b0 \cf2  **argv)\
+\{\
+    \cf13 glutInit\cf2 (&argc, argv);\
+    \cf13 glutInitDisplayMode\cf2 (\cf15 GLUT_DOUBLE\cf2  | \cf15 GLUT_RGB\cf2 );\
+    \cf13 glutInitWindowSize\cf2 (\cf8 600\cf2 , \cf8 600\cf2 );\
+    \cf13 glutInitWindowPosition\cf2 (\cf8 40\cf2 , \cf8 40\cf2 );\
+    \cf13 glutCreateWindow\cf2 (\cf16 "The Cube World"\cf2 );\
+    \cf11 init\cf2 ();\
+    \cf13 glutDisplayFunc\cf2 (\cf11 display\cf2 );\
+    \cf13 glutKeyboardFunc\cf2 (\cf11 keyboard\cf2 );\
+    \cf6 //Camera(cam.PosX, cam.Yeye,Zeye,XCentre,YCentre,ZCentre,0.0,1.0, 1.0);\cf2 \
+\
+    \cf6 /* this time we're going to keep the aspect ratio\cf2 \
+\cf6     constant by trapping the window resizes */\cf2 \
+    \cf13 glutReshapeFunc\cf2 (\cf11 resize\cf2 );\
+\
+    \cf13 glutMainLoop\cf2 ();\
+    
+\f2\b \cf4 return
+\f1\b0 \cf2  \cf8 0\cf2 ;\
+\}\
+\
+
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 init\cf2 (
+\f2\b \cf4 void
+\f1\b0 \cf2 )\
+\{\
+    \cf13 glClearColor\cf2 (\cf8 0.0\cf2 , \cf8 0.6\cf2 , \cf8 0.8\cf2 , \cf8 1.0\cf2 ); \cf6 // background black\cf2 \
+    \cf6 //GLfloat cyan[] = \{0.0f, 0.6f, 0.8f, 1.0f\};\cf2 \
+    \cf6 //glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);\cf2 \
+    \cf6 //glClearColor(0.0,0.0,0.0,0.0);\cf2 \
+    \cf13 glEnable\cf2 (\cf15 GL_DEPTH_TEST\cf2 );\
+    \cf10 is_depth\cf2  = \cf8 1\cf2 ;\
+    \cf13 glMatrixMode\cf2 (\cf15 GL_MODELVIEW\cf2 );\
+    \cf13 glLoadIdentity\cf2 ();\
+    \cf6 //Camera(Xeye,Yeye,Zeye,XCentre,YCentre,ZCentre,0.0,1.0, 1.0);\cf2 \
+    \
+    \cf12 GLfloat\cf2  light1_ambient [] = \{\cf8 1.0\cf2 , \cf8 1.0\cf2 , \cf8 1.0\cf2 , \cf8 1.0\cf2 \};\
+    \cf12 GLfloat\cf2  light1_diffuse [] = \{\cf8 1.0\cf2 , \cf8 1.0\cf2 , \cf8 0.5\cf2 , \cf8 1.0\cf2 \};\
+    \cf12 GLfloat\cf2  light1_specular[] = \{\cf8 1.0\cf2 , \cf8 1.0\cf2 , \cf8 0.5\cf2 , \cf8 1.0\cf2 \};\
+    \cf12 GLfloat\cf2  light1_position[] = \{\cf8 1.0\cf2 , \cf8 1.0\cf2 , \cf8 1.0\cf2 , \cf8 0.0\cf2 \};\
+    \cf6 //GLfloat spot_direction[] = \{-1.0, -1.0, 0.0\};\cf2 \
+\
+    \cf13 glLightfv\cf2 (\cf15 GL_LIGHT1\cf2 ,\cf15 GL_AMBIENT\cf2 ,light1_ambient);\
+    \cf13 glLightfv\cf2 (\cf15 GL_LIGHT1\cf2 ,\cf15 GL_DIFFUSE\cf2 , light1_diffuse);\
+    \cf13 glLightfv\cf2 (\cf15 GL_LIGHT1\cf2 ,\cf15 GL_SPECULAR\cf2 , light1_specular);\
+    \cf13 glLightfv\cf2 (\cf15 GL_LIGHT1\cf2 ,\cf15 GL_POSITION\cf2 , light1_position);\
+    \
+    \cf6 //GLfloat mat_specular[] = \{ 1.0, 1.0, 1.0, 1.0 \};\cf2 \
+    \cf6 //GLfloat low_shininess[] = \{ 5.0 \};\cf2 \
+    \cf6 //glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);\cf2 \
+    \cf6 //glMaterialfv(GL_FRONT, GL_SHININESS, low_shininess);\cf2 \
+\
+    \cf13 glLightf\cf2 (\cf15 GL_LIGHT1\cf2 ,\cf15 GL_CONSTANT_ATTENUATION\cf2 ,\cf8 1.5\cf2 );\
+    \cf13 glLightf\cf2 (\cf15 GL_LIGHT1\cf2 , \cf15 GL_LINEAR_ATTENUATION\cf2 ,\cf8 0.5\cf2 );\
+    \cf13 glLightf\cf2 (\cf15 GL_LIGHT1\cf2 , \cf15 GL_QUADRATIC_ATTENUATION\cf2 , \cf8 0.2\cf2 );\
+\
+    \cf6 //glLightf(GL_LIGHT1, GL_SPOT_CUTOFF,45.0);\cf2 \
+    \cf6 //glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION,spot_direction);\cf2 \
+    \cf6 //glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0);\cf2 \
+    \
+    \cf6 //GLfloat cyan[] = \{0.f, .8f, .8f, 1.f\};\cf2 \
+    \cf6 //glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);\cf2 \
+\
+    \cf6 //GLfloat light1_position[] = \{1.0, 1.0, 1.0, 0.0\};\cf2 \
+    \cf6 //GLfloat direction[] = \{1.0, 1.0, 1.0, 0.0\};\cf2 \
+    \cf6 //GLfloat yellow[] = \{1.0, 1.0, 0.5, 1.0\};\cf2 \
+    \cf6 //glLightfv(GL_LIGHT0, GL_DIFFUSE, yellow);\cf2 \
+    \cf6 //glLightfv(GL_LIGHT0,GL_POSITION, light1_position);\cf2 \
+    \cf6 //glLightfv(GL_LIGHT0, GL_POSITION, direction);\cf2 \
+    \
+    \cf13 glEnable\cf2 (\cf15 GL_LIGHTING\cf2 );\
+    \cf13 glEnable\cf2 (\cf15 GL_LIGHT1\cf2 );\
+\}\
+\
+
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 display\cf2 (
+\f2\b \cf4 void
+\f1\b0 \cf2 )\
+\{\
+\
+    \
+    
+\f2\b \cf4 if
+\f1\b0 \cf2  (\cf10 is_depth\cf2 )\
+        \cf13 glClear\cf2 (\cf15 GL_COLOR_BUFFER_BIT\cf2  | \cf15 GL_DEPTH_BUFFER_BIT\cf2 );\
+    
+\f2\b \cf4 else
+\f1\b0 \cf2 \
+        \cf13 glClear\cf2 (\cf15 GL_COLOR_BUFFER_BIT\cf2 );\
+    \
+\
+    \cf6 /* draw the floor */\cf2 \
+    \cf13 glBegin\cf2 (\cf15 GL_QUADS\cf2 );\
+        \cf13 glColor3f\cf2 (\cf8 0.2f\cf2 , \cf8 0.9f\cf2 , \cf8 0.2f\cf2 );\
+        \cf6 //glColor3f(0.0,0.0,0.0);\cf2 \
+        \cf13 glVertex3f\cf2 (-\cf8 100.0\cf2 , \cf8 0.0\cf2 , -\cf8 100.0\cf2 );\
+        \cf13 glColor3f\cf2 (\cf8 0.2f\cf2 , \cf8 0.9f\cf2 , \cf8 0.2f\cf2 );\
+        \cf6 //glColor3f(0.0,0.0,0.0);\cf2 \
+        \cf13 glVertex3f\cf2 (-\cf8 100.0\cf2 , \cf8 0.0\cf2 , \cf8 100.0\cf2 );\
+        \cf13 glColor3f\cf2 (\cf8 0.2f\cf2 , \cf8 0.9f\cf2 , \cf8 0.2f\cf2 );\
+        \cf6 //glColor3f(0.0,0.0,0.0);\cf2 \
+        \cf13 glVertex3f\cf2 (\cf8 100.0\cf2 , \cf8 0.0\cf2 , \cf8 100.0\cf2 );\
+        \cf13 glColor3f\cf2 (\cf8 0.2f\cf2 , \cf8 0.9f\cf2 , \cf8 0.2f\cf2 );\
+        \cf6 //glColor3f(0.0,0.0,0.0);\cf2 \
+        \cf13 glVertex3f\cf2 (\cf8 100.0\cf2 , \cf8 0.0\cf2 , -\cf8 100.0\cf2 );\
+    \
+        \cf6 //GLfloat cyan[] = \{0.1f, 0.1f, 0.0f, 0.0f\};\cf2 \
+        \cf6 //glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);\cf2 \
+    \cf13 glEnd\cf2 ();\
+    \cf6 /* draw 12 cubes with different colors */\cf2 \
+    \cf11 drawcube\cf2 (\cf8 75\cf2 , \cf8 57\cf2 , \cf8 2\cf2 );\
+    \cf11 drawcube\cf2 (-\cf8 65\cf2 , -\cf8 12\cf2 , \cf8 3\cf2 );\
+    \cf11 drawcube\cf2 (\cf8 50\cf2 , -\cf8 50\cf2 , \cf8 1\cf2 );\
+    \cf11 drawcube\cf2 (-\cf8 56\cf2 , \cf8 17\cf2 , \cf8 2\cf2 );\
+    \cf11 drawcube\cf2 (\cf8 67\cf2 , \cf8 12\cf2 , \cf8 3\cf2 );\
+    \cf11 drawcube\cf2 (-\cf8 87\cf2 , \cf8 32\cf2 , \cf8 1\cf2 );\
+    \cf11 drawcube\cf2 (-\cf8 26\cf2 , \cf8 75\cf2 , \cf8 2\cf2 );\
+    \cf11 drawcube\cf2 (\cf8 57\cf2 , \cf8 82\cf2 , \cf8 3\cf2 );\
+    \cf11 drawcube\cf2 (-\cf8 3\cf2 , \cf8 12\cf2 , \cf8 1\cf2 );\
+    \cf11 drawcube\cf2 (\cf8 46\cf2 , \cf8 35\cf2 , \cf8 2\cf2 );\
+    \cf11 drawcube\cf2 (\cf8 37\cf2 , -\cf8 2\cf2 , \cf8 3\cf2 );\
+    \cf13 glutSwapBuffers\cf2 ();\
+    \
+    \cf6 //glutSolidSphere(1.0, 25, 25);\cf2 \
+ \
+    \
+\}\
+\
+
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 keyboard\cf2 (
+\f2\b \cf4 unsigned
+\f1\b0 \cf2  
+\f2\b \cf4 char
+\f1\b0 \cf2  key, 
+\f2\b \cf4 int
+\f1\b0 \cf2  x, 
+\f2\b \cf4 int
+\f1\b0 \cf2  y)\
+\{\
+    \cf6 /* This time the controls are:\cf2 \
+\cf6     \cf2 \
+\cf6       "a": move left\cf2 \
+\cf6       "d": move right\cf2 \
+\cf6       "w": move forward\cf2 \
+\cf6       "s": move back\cf2 \
+\cf6       "t": toggle depth-testing\cf2 \
+\
+\cf6     */\cf2 \
+    \
+    
+\f2\b \cf4 switch
+\f1\b0 \cf2  (key)\
+    \{\
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf17 'a'\cf2 :\
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf17 'A'\cf2 :\
+        \cf13 glTranslatef\cf2 (\cf8 5.0\cf2 , \cf8 0.0\cf2 , \cf8 0.0\cf2 );\
+        
+\f2\b \cf4 break
+\f1\b0 \cf2 ;\
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf17 'd'\cf2 :\
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf17 'D'\cf2 :\
+        \cf13 glTranslatef\cf2 (-\cf8 5.0\cf2 , \cf8 0.0\cf2 , \cf8 0.0\cf2 );\
+        
+\f2\b \cf4 break
+\f1\b0 \cf2 ;\
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf17 'w'\cf2 :\
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf17 'W'\cf2 :\
+        \cf13 glTranslatef\cf2 (\cf8 0.0\cf2 , \cf8 0.0\cf2 , \cf8 5.0\cf2 );\
+        
+\f2\b \cf4 break
+\f1\b0 \cf2 ;\
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf17 's'\cf2 :\
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf17 'S'\cf2 :\
+        \cf13 glTranslatef\cf2 (\cf8 0.0\cf2 , \cf8 0.0\cf2 , -\cf8 5.0\cf2 );\
+        
+\f2\b \cf4 break
+\f1\b0 \cf2 ;\
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf17 't'\cf2 :\
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf17 'T'\cf2 :\
+        
+\f2\b \cf4 if
+\f1\b0 \cf2  (\cf10 is_depth\cf2 )\
+        \{\
+            \cf10 is_depth\cf2  = \cf8 0\cf2 ;\
+            \cf13 glDisable\cf2 (\cf15 GL_DEPTH_TEST\cf2 );\
+        \}\
+        
+\f2\b \cf4 else
+\f1\b0 \cf2 \
+        \{\
+            \cf10 is_depth\cf2  = \cf8 1\cf2 ;\
+            \cf13 glEnable\cf2 (\cf15 GL_DEPTH_TEST\cf2 );\
+        \}\
+    \}\
+    \cf11 display\cf2 ();\
+\}\
+    \
+
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 resize\cf2 (
+\f2\b \cf4 int
+\f1\b0 \cf2  width, 
+\f2\b \cf4 int
+\f1\b0 \cf2  height)\
+\{\
+    
+\f2\b \cf4 if
+\f1\b0 \cf2  (height == \cf8 0\cf2 ) height = \cf8 1\cf2 ;\
+    \
+    \cf13 glMatrixMode\cf2 (\cf15 GL_PROJECTION\cf2 );\
+    \cf13 glLoadIdentity\cf2 ();\
+\
+    \cf6 /* note we divide our width by our height to get the aspect ratio */\cf2 \
+    \cf13 gluPerspective\cf2 (\cf8 45.0\cf2 , width / height, \cf8 1.0\cf2 , \cf8 400.0\cf2 );\
+\
+    \cf6 /* set initial position */\cf2 \
+    \cf13 glTranslatef\cf2 (\cf8 0.0\cf2 , -\cf8 5.0\cf2 , -\cf8 150.0\cf2 );\
+\
+    \cf13 glMatrixMode\cf2 (\cf15 GL_MODELVIEW\cf2 );\
+\}\
+\
+
+\f2\b \cf4 void
+\f1\b0 \cf2  \cf7 drawcube\cf2 (
+\f2\b \cf4 int
+\f1\b0 \cf2  x_offset, 
+\f2\b \cf4 int
+\f1\b0 \cf2  z_offset, 
+\f2\b \cf4 int
+\f1\b0 \cf2  color)\
+\{\
+    \cf6 /* this function draws a cube centerd at (x_offset, z_offset)\cf2 \
+\cf6     x and z _big are the back and rightmost points, x and z _small are\cf2 \
+\cf6     the front and leftmost points */\cf2 \
+    
+\f2\b \cf4 float
+\f1\b0 \cf2  x_big = (
+\f2\b \cf4 float
+\f1\b0 \cf2 )x_offset + \cf8 5\cf2 ;\
+    
+\f2\b \cf4 float
+\f1\b0 \cf2  z_big = (
+\f2\b \cf4 float
+\f1\b0 \cf2 )z_offset + \cf8 5\cf2 ;\
+    
+\f2\b \cf4 float
+\f1\b0 \cf2  x_small = (
+\f2\b \cf4 float
+\f1\b0 \cf2 )x_offset - \cf8 5\cf2 ;\
+    
+\f2\b \cf4 float
+\f1\b0 \cf2  z_small = (
+\f2\b \cf4 float
+\f1\b0 \cf2 )z_offset - \cf8 5\cf2 ;\
+    
+\f2\b \cf4 switch
+\f1\b0 \cf2 (color)\
+    \{\
+            \
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf8 1\cf2 :\
+        \cf13 glColor3f\cf2 (\cf8 1.0\cf2 ,\cf8 0.0\cf2 ,\cf8 0.0\cf2 ); \cf6 // red\cf2 \
+        
+\f2\b \cf4 break
+\f1\b0 \cf2 ;\
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf8 2\cf2 :\
+        \cf13 glColor3f\cf2 (\cf8 0.2\cf2 ,\cf8 1.0\cf2 ,\cf8 1.2\cf2 ); \cf6 // light blue\cf2 \
+        
+\f2\b \cf4 break
+\f1\b0 \cf2 ;\
+    
+\f2\b \cf4 case
+\f1\b0 \cf2  \cf8 3\cf2 :\
+        \cf13 glColor3f\cf2 (\cf8 0.0\cf2 ,\cf8 0.0\cf2 ,\cf8 1.0\cf2 ); \cf6 // blue\cf2 \
+        
+\f2\b \cf4 break
+\f1\b0 \cf2 ;\
+    \}\
+    \cf13 glBegin\cf2 (\cf15 GL_QUADS\cf2 );\
+        \cf13 glVertex3f\cf2 (x_small,\cf8 10.0\cf2 ,z_big); \cf6 /* front */\cf2 \
+        \cf13 glVertex3f\cf2 (x_small,\cf8 0.0\cf2 ,z_big);\
+        \cf13 glVertex3f\cf2 (x_big,\cf8 0.0\cf2 ,z_big);\
+        \cf13 glVertex3f\cf2 (x_big,\cf8 10.0\cf2 ,z_big);\
+\
+        \cf13 glVertex3f\cf2 (x_big,\cf8 10.0\cf2 ,z_small); \cf6 /* back */\cf2 \
+        \cf13 glVertex3f\cf2 (x_big,\cf8 0.0\cf2 ,z_small);\
+        \cf13 glVertex3f\cf2 (x_small,\cf8 0.0\cf2 ,z_small);\
+        \cf13 glVertex3f\cf2 (x_small,\cf8 10.0\cf2 ,z_small);\
+\
+        \cf13 glVertex3f\cf2 (x_big,\cf8 10.0\cf2 ,z_big); \cf6 /* right */\cf2 \
+        \cf13 glVertex3f\cf2 (x_big,\cf8 0.0\cf2 ,z_big);\
+        \cf13 glVertex3f\cf2 (x_big,\cf8 0.0\cf2 ,z_small);\
+        \cf13 glVertex3f\cf2 (x_big,\cf8 10.0\cf2 ,z_small);\
+\
+        \cf13 glVertex3f\cf2 (x_small,\cf8 10.0\cf2 ,z_small); \cf6 /* left */\cf2 \
+        \cf13 glVertex3f\cf2 (x_small,\cf8 0.0\cf2 ,z_small);\
+        \cf13 glVertex3f\cf2 (x_small,\cf8 0.0\cf2 ,z_big);\
+        \cf13 glVertex3f\cf2 (x_small,\cf8 10.0\cf2 ,z_big);\
+\
+        \cf13 glVertex3f\cf2 (x_small,\cf8 10.0\cf2 ,z_big); \cf6 /* top */\cf2 \
+        \cf13 glVertex3f\cf2 (x_big,\cf8 10.0\cf2 ,z_big);\
+        \cf13 glVertex3f\cf2 (x_big,\cf8 10.0\cf2 ,z_small);\
+        \cf13 glVertex3f\cf2 (x_small,\cf8 10.0\cf2 ,z_small);\
+\
+        \cf13 glVertex3f\cf2 (x_small,\cf8 0.0\cf2 ,z_small); \cf6 /* bottom */\cf2 \
+        \cf13 glVertex3f\cf2 (x_big,\cf8 0.0\cf2 ,z_small);\
+        \cf13 glVertex3f\cf2 (x_big,\cf8 0.0\cf2 ,z_big);\
+        \cf13 glVertex3f\cf2 (x_small,\cf8 0.0\cf2 ,z_big);\
+    \cf13 glEnd\cf2 ();\
+\}\
+}
