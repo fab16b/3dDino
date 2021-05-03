@@ -151,7 +151,7 @@ int main (int argc, char **argv)
     init();
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
-    //Camera(cam.PosX, cam.Yeye,Zeye,XCentre,YCentre,ZCentre,0.0,1.0, 1.0);
+    Camera();
 
     /* this time we're going to keep the aspect ratio
     constant by trapping the window resizes */
@@ -168,7 +168,7 @@ void init(void)
     is_depth = 1;
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //Camera(Xeye,Yeye,Zeye,XCentre,YCentre,ZCentre,0.0,1.0, 1.0);
+    Camera();
 }
 
 void display(void)
@@ -181,13 +181,13 @@ void display(void)
     /* draw the floor */
     glBegin(GL_QUADS);
         glColor3f(0.2f, 0.2f, 0.2f);
-        glVertex3f(-100.0, 0.0, -100.0);
+        glVertex3f(-100.0, -5.0, -100.0);
         glColor3f(0.4f, 0.4f, 0.4f);
-        glVertex3f(-100.0, 0.0, 100.0);
+        glVertex3f(-100.0, -5.0, 100.0);
         glColor3f(0.6f, 0.6f, 0.6f);
-        glVertex3f(100.0, 0.0, 100.0);
+        glVertex3f(100.0, -5.0, 100.0);
         glColor3f(0.8f, 0.8f, 0.8f);
-        glVertex3f(100.0, 0.0, -100.0);
+        glVertex3f(100.0, -5.0, -100.0);
     glEnd();
     /* draw 12 cubes with different colors */
     drawcube(75, 57, 2);
@@ -257,6 +257,13 @@ void keyboard(unsigned char key, int x, int y)
     case 'S':
         glTranslatef(0.0, 0.0, -5.0);
         break;
+    case 'r':
+        glRotatef(2,0.0, 2.0, 0.0);
+        break;
+    case 'R':
+        glRotatef(-2,0.0, 2.0, 0.0);
+        break;
+
     case 't':
     case 'T':
         if (is_depth)
