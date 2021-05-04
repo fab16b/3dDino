@@ -10,10 +10,6 @@
 		175CD4A92635FC740030F77C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175CD4A82635FC740030F77C /* main.cpp */; };
 		175CD4B22635FC7E0030F77C /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 175CD4B12635FC7E0030F77C /* OpenGL.framework */; };
 		175CD4B42635FC820030F77C /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 175CD4B32635FC820030F77C /* GLUT.framework */; };
-		E67653E72636123E0090549B /* libglfw.3.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = E67653E52636123E0090549B /* libglfw.3.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		E67653E82636125D0090549B /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E67653E52636123E0090549B /* libglfw.3.3.dylib */; };
-		E69B93E0263B98CB00762559 /* libGLEW.2.2.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 175CD4B52635FC990030F77C /* libGLEW.2.2.0.dylib */; };
-		E69B93E1263B98CB00762559 /* libGLEW.2.2.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 175CD4B52635FC990030F77C /* libGLEW.2.2.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,18 +21,6 @@
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
-		};
-		175CD4B82635FC990030F77C /* Embed Libraries */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				E67653E72636123E0090549B /* libglfw.3.3.dylib in Embed Libraries */,
-				E69B93E1263B98CB00762559 /* libGLEW.2.2.0.dylib in Embed Libraries */,
-			);
-			name = "Embed Libraries";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -56,8 +40,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E67653E82636125D0090549B /* libglfw.3.3.dylib in Frameworks */,
-				E69B93E0263B98CB00762559 /* libGLEW.2.2.0.dylib in Frameworks */,
 				175CD4B42635FC820030F77C /* GLUT.framework in Frameworks */,
 				175CD4B22635FC7E0030F77C /* OpenGL.framework in Frameworks */,
 			);
@@ -114,7 +96,6 @@
 				175CD4A12635FC740030F77C /* Sources */,
 				175CD4A22635FC740030F77C /* Frameworks */,
 				175CD4A32635FC740030F77C /* CopyFiles */,
-				175CD4B82635FC990030F77C /* Embed Libraries */,
 			);
 			buildRules = (
 			);

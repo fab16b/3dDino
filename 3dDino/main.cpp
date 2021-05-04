@@ -4,42 +4,16 @@
 //
 //  Created by Felix Mbikogbia  on 4/25/21.
 //
+#ifdef __APPLE_CC__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
 #include <iostream>
-#include <GLUT/GLUT.h>
 #include <OPENGL/gl.h>
 #include <OPENGL/glu.h>
-#include <fstream>
-#include <vector>
 #include <cmath>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 using namespace std;
-
-void SpecialKeys(int key, int x, int y)
-{
-    switch (key)
-    {
-        case GLUT_KEY_LEFT: cam.slide(-0.2,0,0); break;
-        case GLUT_KEY_UP: cam.slide(0,0,-0.2); break;
-        case GLUT_KEY_RIGHT: cam.slide(0.2,0,0); break;
-        case GLUT_KEY_DOWN: cam.slide(0,0,0.2); break;
-    }
-    
-    glutPostRedisplay();
-}
-
-void init(void)
-{
-    glClearColor(0.0, 0.6, 0.8, 1.0); // background blue
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT1);
-    glEnable(GL_COLOR_MATERIAL);
-    glViewport(0, 0, 640, 430);
-    //eye, look, up
-    //cam.set(5,5,5,0,0,0,0,1,0)
-    //cam.setShape(30.0, 64.0/48.0, .5, 100.0);
-}
 
 class Point3
 {
@@ -57,7 +31,7 @@ class Vector3
 {
 public:
     float x,y,z;
-    Vector3(float x, float y, float z): x(x), y(y), z(z) {}
+    Vector3(float x = 0, float y = 0, float z = 0): x(x), y(y), z(z) {}
     Vector3(const Vector3& vector) : x(vector.x), y(vector.y), z(vector.z) {}
     Vector3(Point3 a, Point3 b): x(b.x - a.x), y(b.y  - a.y), z(b.z  - a.z) {}
     ~Vector3() {}
@@ -112,9 +86,9 @@ public:
         return Vector3(inv*x, inv*y, inv*z);
     }
     
-    Vector3 &operator*(float f){
+    Vector3 &operator/=(float f){
         float inv = 1.f / f;
-        x /= inv*x; y /= inv*y; z /= inv*z;
+        x *= inv; y *= inv; z *= inv;
         return *this;
     }
     
@@ -154,55 +128,11 @@ public:
     
 };
 
-
-double lambert(Vector3 s, Vector3 m)
-{
-    float top = s.dot(m);
-    float bottom = s.magnitude() * m.normalize();
-    float n = top/bottom;
-    float lambert = max( (float)0,n );
-    return lambert;;
-}
-
-double phong(Vector3 v, Vector3 s, Vector3 m, int f)
-{
-    Vector3 h = s + v;
-    Vector3 left = ( h/h.magnitude());
-    Vector3 right = ( m/m.magnitude());
-    float frac = left.dot(right);
-    float n = pow(frac,f);
-    float phong = max((float)0,n );
-    
-    return phong;;
-}
-
-Vector3 getR(Vector3 s, Vector3 m)
-{
-    double top = s.dot(m);
-    double bottom = pow(m.magnitude(),2);
-    double fraction = top/bottom;
-    
-    return s.negative() + (m*(2*fraction));
-}
-
-Vector3 getSV(Point3 shape, Point3 sun)
-{
-    return Vector3(shape, sun);
-}
-
-double light(Vector3 s, Vector3 m, Vector3 v, double Ia, double Pa, double Id, double Pd,double Is, double Ps, int f)
-{
-    return (Ia * Pa) + (Id * Pd * lambert(s,m)) + (Is * Ps * phong(v, s, m, f));
-}
-
 class Dino
 {
 public:
     Point3 center;
-    Vector3 u, v, n, up;
-    double viewAngle, aspect, nearDist, farDist;
-    bool turn = false;
-    double turnAngle = 0;
+
     Dino() {};
     Dino(Point3 c){ center.x = c.x; center.y = c.y; center.z = c.z;}
     void drawDino();
@@ -211,13 +141,17 @@ public:
     void drawhead();
     void move(Point3 c){center = c;}
    
+    
+    Vector3 u, v, up;
+    Vector3 n;
+    double viewAngle, aspect, nearDist, farDist;
+    bool turn = false;
+    double turnAngle = 0;
     //using the slide funtion tho I want it to hop
     void slide(float delU, float delV, float delN);
     void set(Point3 center,Point3 look, Vector3 up);
     void set(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3);
 };
-
-
 
 void Dino::set(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3)
 {
@@ -251,44 +185,98 @@ void Dino::drawbody()
     glPushMatrix();
         glTranslated(center.x, center.y , center.z);
         glColor3f(1.0, 0.0, 0.0);
+        glScaled(.8,1.2,.8);
+        glutSolidCube(6);
+    glPopMatrix();
+    
+    //tail
+    
+    glPushMatrix();
+        glTranslated(center.x+2, center.y-2 , center.z);
+        glColor3f(1.0, 0.0, 0.0);
+        glScaled(1,1,.8);
+        glutSolidCube(2);
+    glPopMatrix();
+    
+    glPushMatrix();
+        glTranslated(center.x+3.5, center.y-2 , center.z);
+        glColor3f(1.0, 0.0, 0.0);
+        glScaled(1,1,.8);
+        glutSolidCube(1.5);
+    glPopMatrix();
+    
+    glPushMatrix();
+        glTranslated(center.x+4.5, center.y-2 , center.z);
+        glColor3f(1.0, 0.0, 0.0);
+        glScaled(1,1,.8);
         glutSolidCube(1);
     glPopMatrix();
     
-    //eye r
     glPushMatrix();
-        glColor3f(1.0, 1.0, 1.0);
-        glTranslated(center.x, center.y, center.z);
-        //glScaled(1, 1, 1);
-        glutSolidSphere(1,1,1);
+        glTranslated(center.x+5.1, center.y-2 , center.z);
+        glColor3f(1.0, 0.0, 0.0);
+        glScaled(1,1,.8);
+        glutSolidCube(.5);
     glPopMatrix();
     
-    //eye l
     glPushMatrix();
-        glColor3f(1.0, 1.0, 1.0);
-        glTranslated(center.x, center.y, center.z);
-        //glScaled(1, 1, 1);
-        glutSolidSphere(1,1,1);
+        glTranslated(center.x+5.5, center.y-2 , center.z);
+        glColor3f(1.0, 0.0, 0.0);
+        glScaled(1,1,.8);
+        glutSolidCube(.3);
     glPopMatrix();
+    
+    glPushMatrix();
+        glTranslated(center.x+5.7, center.y-2 , center.z);
+        glColor3f(1.0, 0.0, 0.0);
+        glScaled(1,1,.8);
+        glutSolidCube(.2);
+    glPopMatrix();
+    
+
 }
 
 void Dino::drawhead()
 {
     glPushMatrix();
-        glTranslated(center.x-.48, center.y+.75 , center.z);
-        glColor3f(1.0, 0.0, 0.0);
-        glutSolidCube(.5);
+        glTranslated(center.x-2, center.y+5 , center.z);
+        glColor3f(0.9, 0.0, 0.0);
+        glScaled(1,1,.8);
+        glutSolidCube(4);
     glPopMatrix();
-}
+    
+    //eye r
+    glPushMatrix();
+        glTranslated(center.x-2, center.y+5 , center.z-1.7);
+        glColor3f(0, 0, 0);
+        glScaled(.5, .5, .5);
+        glutSolidSphere(.45,10,10);
+    glPopMatrix();
+    
+    //eye l
+    glPushMatrix();
+        glTranslated(center.x-2, center.y+5 , center.z+1.7);
+        glColor3f(0, 0, 0);
+        glScaled(.5, .5, .5);
+        glutSolidSphere(.45,10,10);
+    glPopMatrix();}
 
 void Dino::drawHands()
 {
     glPushMatrix();
-        glTranslated(center.x-.55, center.y+.2, center.z);
+        glTranslated(center.x-2.9, center.y+.2, center.z-1.7);
         glColor3f(1.0, 0.0, 0.0);
-        glutSolidCube(.1);
+        glScaled(1, .5, .5);
+        glutSolidCube(1);
     glPopMatrix();
     
-    //fingure 1 - 6
+    glPushMatrix();
+        glTranslated(center.x-2.9, center.y+.2, center.z+1.7);
+        glColor3f(1.0, 0.0, 0.0);
+        glScaled(1, .5, .5);
+        glutSolidCube(1);
+    glPopMatrix();
+    
 }
 
 void Dino::drawDino()
@@ -302,266 +290,328 @@ void Dino::drawDino()
     this -> drawHands();
 }
 
-void drawcube(int x_offset, int z_offset, int color)
+class Camera{
+public:
+    Point3 eye, look, up;
+    Vector3 u,v,n;
+    double viewAngle, aspect, nearDist, farDist;
+    void setModelviewMatrix();
+    Camera() {};
+    void set(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3);
+    void roll(float angle);
+    void pitch(float angle);
+    void yaw(float angle);
+    void slide(float delU, float delV, float delN);
+    void setShape(float vAng, float asp, float nearD, float farD);
+    void getShape(float &vang, float &asp, float &nearD, float &farD);
+};
+
+Camera cam;
+
+void Camera::setModelviewMatrix(void)
 {
-     /* this function draws a cube centerd at (x_offset, z_offset)
-    x and z _big are the back and rightmost points, x and z _small are
-    the front and leftmost points*/
-    float x_big = (float)x_offset + 5;
-    float z_big = (float)z_offset + 5;
-    float x_small = (float)x_offset - 5;
-    float z_small = (float)z_offset - 5;
-    switch(color)
-    {
-            
-    case 1:
-        glColor3f(1.0,0.0,0.0); // red
-        break;
-    case 2:
-        glColor3f(0.2,1.0,1.2); // light blue
-        break;
-    case 3:
-        glColor3f(0.0,0.0,1.0); // blue
-        break;
-    }
-    glBegin(GL_QUADS);
-        glVertex3f(x_small,10.0,z_big);  //front
-        glVertex3f(x_small,0.0,z_big);
-        glVertex3f(x_big,0.0,z_big);
-        glVertex3f(x_big,10.0,z_big);
-
-        glVertex3f(x_big,10.0,z_small);  //back
-        glVertex3f(x_big,0.0,z_small);
-        glVertex3f(x_small,0.0,z_small);
-        glVertex3f(x_small,10.0,z_small);
-
-        glVertex3f(x_big,10.0,z_big);  //right
-        glVertex3f(x_big,0.0,z_big);
-        glVertex3f(x_big,0.0,z_small);
-        glVertex3f(x_big,10.0,z_small);
-
-        glVertex3f(x_small,10.0,z_small);  //left
-        glVertex3f(x_small,0.0,z_small);
-        glVertex3f(x_small,0.0,z_big);
-        glVertex3f(x_small,10.0,z_big);
-
-        glVertex3f(x_small,10.0,z_big);  //top
-        glVertex3f(x_big,10.0,z_big);
-        glVertex3f(x_big,10.0,z_small);
-        glVertex3f(x_small,10.0,z_small);
-
-        glVertex3f(x_small,0.0,z_small);  //bottom
-        glVertex3f(x_big,0.0,z_small);
-        glVertex3f(x_big,0.0,z_big);
-        glVertex3f(x_small,0.0,z_big);
-    glEnd();
+    float m[16];
+    Vector3 eVec(eye.x, eye.y, eye.z);
+    m[0] = u.x;  m[4] = u.y; m[8] = u.z; m[12] = - eVec.dot(u);
+    m[1] =  v.x; m[5] = v.y;  m[9] = v.z; m[13] = - eVec.dot(v);
+    m[2] =  n.x; m[6] = n.y; m[10] = n.z; m[14] = - eVec.dot(n);
+    m[3] = 0;  m[7] = 0;   m[11] = 0;   m[15] = 1.0;
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(m);
 }
+
+void Camera::set(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3)
+{
+        Point3 Eye = Point3(x1,y1,z1);
+        Point3 Look = Point3(x2,y2,y3);
+        Vector3 Up = Vector3(x3,y3,z3);
+
+        eye.set(Eye);
+        n.set(eye.x - Look.x, eye.y - Look.y, eye.y - Look.y);
+        u.set(Up.cross(n));
+        n.normalize();
+        u.normalize();
+        v.set(n.cross(u)); //might just be “v.set” in the vector class
+        setModelviewMatrix();
+}
+
+void Camera::setShape(float vAng, float asp, float nearD, float farD)
+{
+    viewAngle = vAng;
+    aspect = asp;
+    nearDist = nearD;
+    farDist = farD;
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(vAng, asp, nearD, farD);
+}
+
+void Camera::slide(float delU, float delV, float delN)
+{
+    eye.x += delU * u.x + delV * v.x + delN * n.x;
+    eye.y += delU * u.y + delV * v.y + delN * n.y;
+    eye.z += delU * u.z + delV * v.z + delN * n.z;
+    look.x += delU * u.x + delV * v.x + delN * n.x;
+    look.y += delU * u.y + delV * v.y + delN * n.y;
+    look.z += delU * u.z + delV * v.z + delN * n.z;
+    setModelviewMatrix();
+}
+
+void Camera::roll(float angle)
+{
+    float cs = cos(3.14149265/180* angle);
+    float sn = sin(3.14149265/180* angle);
+    Vector3 t(u);
+    u.set(cs * t.x - sn * v.x, cs * t.y - sn * v.y, cs * t.z - sn * v.z);
+    v.set(sn * t.x + cs * v.x, sn * t.y + cs * v.y, sn * t.z + cs * v.z);
+    setModelviewMatrix();
+}
+
+// similar to roll switch the v for n when setting the vector
+void Camera::pitch(float angle)
+{
+    float cs = cos(3.14149265/180* angle);
+    float sn = sin(3.14149265/180* angle);
+    Vector3 t(v);
+    v.set(cs * t.x - sn * n.x, cs * t.y - sn * n.y, cs * t.z - sn * n.z);
+    n.set(sn * t.x + cs * n.x, sn * t.y + cs * n.y, sn * t.z + cs * n.z);
+    setModelviewMatrix();
+}
+
+// similar to roll switch the v for u when setting the vector
+void Camera::yaw(float angle)
+{
+    float j = 3.14149265/180* angle;
+    float cs = cos(j);
+    float sn = sin(j);
+    Vector3 t(n);
+    n.set(cs * t.x - sn * u.x, cs * t.y - sn * u.y, cs * t.z - sn * u.z);
+    u.set(sn * t.x + cs * u.x, sn * t.y + cs * u.y, sn * t.z + cs * u.z);
+    setModelviewMatrix();
+}
+
+double lambert(Vector3 s, Vector3 m)
+{
+    float top = s.dot(m);
+    float bottom = s.magnitude() * m.magnitude();
+    float n = top/bottom;
+    float lambert = max( (float)0,n );
+    return lambert;;
+}
+
+double phong(Vector3 v, Vector3 s, Vector3 m, int f)
+{
+    Vector3 h = s + v;
+    Vector3 left = ( h/h.magnitude());
+    Vector3 right = ( m/m.magnitude());
+    float frac = left.dot(right);
+    float n = pow(frac,f);
+    float phong = max((float)0,n );
+    
+    return phong;
+}
+
+Vector3 getR(Vector3 s, Vector3 m)
+{
+    double top = s.dot(m);
+    double bottom = pow(m.magnitude(),2);
+    double fraction = top/bottom;
+    
+    return s.negative() + (m*(2*fraction));
+}
+
+Vector3 getSV(Point3 shape, Point3 sun)
+{
+    return Vector3(shape, sun);
+}
+
+double light(Vector3 s, Vector3 m, Vector3 v, double Ia, double Pa, double Id, double Pd,double Is, double Ps, int f)
+{
+    return (Ia * Pa) + (Id * Pd * lambert(s,m)) + (Is * Ps * phong(v, s, m, f));
+}
+
+
 
 Point3 sun(5,5,5);
 double sunNum = 0;
-
 void display(void)
 {
     
-    GLfloat pos[]  = {sun.x,sun.y,sun.z,0.0};
+    GLfloat pos[]  = {sun.x,sun.y,sun.z,1.0};
     GLfloat amb[]  = {.8,.9,.5,0};
     GLfloat dif[]  = {1.0,.8,1.0,0};
     GLfloat spec[] = {1.0,.8,1.0,0};
     glLightfv(GL_LIGHT0, GL_AMBIENT,  amb);
     glLightfv(GL_LIGHT0, GL_DIFFUSE,  dif);
     glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
+    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
     glPushMatrix();
     glLightfv(GL_LIGHT0, GL_POSITION, pos);
-
-
-     glPopMatrix();
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //Ground Plane
-    glPushMatrix();
-        glColor4d(0.0, 0.0, 1.0,0);
-        glTranslated(-3,-3,-3);
-        glScaled(100,1,100);
-        glutSolidCube(2);
     glPopMatrix();
+
     
-    //draw axis lines, x = red, y = green, z = blue
+    //Ground Plane
     //glPushMatrix();
-        //axis(1);
+        //glColor4d(0.2, 0.5, 0.2,0);
+        //glTranslated(-3,-3,-3);
+        //glScaled(25,1,25);
+        //glutSolidCube(1);
     //glPopMatrix();
-
-    //draw dino function
-    glPushMatrix();
-        glScaled(.4,.4,.4);
-        dino.drawDino();
-    glPopMatrix();
-
-
-    double x[] = { 1, 2,-3, 4, -4, 3, 3, -5, -2, -1};
-    double z[] = { 3,-4, 3,-3, -1,-5, 2,  1,  4, -2};
-    for(int i = 0; i < 10; i++)
+    
+    glBegin(GL_QUADS);
+        glColor3f(0.2f, 0.5f, 0.2f);
+        //glColor3f(0.0,0.0,0.0);
+        glVertex3f(-50.0, 0.0, -50.0);
+        glColor3f(0.2f, 0.5f, 0.2f);
+        //glColor3f(0.0,0.0,0.0);
+        glVertex3f(-50.0, 0.0, 50.0);
+        glColor3f(0.2f, 0.5f, 0.2f);
+        //glColor3f(0.0,0.0,0.0);
+        glVertex3f(50.0, 0.0, 50.0);
+        glColor3f(0.2f, 0.5f, 0.2f);
+        //glColor3f(0.0,0.0,0.0);
+        glVertex3f(50.0, 0.0, -50.0);
+    
+    
+    //double x[] = { 1, 2,-3, 4, -4, 3, 3, -5, -2, -1};
+    //double z[] = { 3,-4, 3,-3, -1,-5, 2,  1,  4, -2};
+    
+    double x[] = {2, 2,  4, -5, 2, -10, 8,  8, -10 };
+    double z[] = {2, 6, -5, 3, -6, -10, 8, -10, 8};
+    for(int i = 0; i < 9; i++)
     {
         //base log
         glPushMatrix();
             glColor3f(.2,.1,.1);
             glTranslated(x[i],0,z[i]);
             glScaled(.3,3,.3);
-            glutSolidCube(.5);
+            glutSolidCube(1);
         glPopMatrix();
-        double n = 0;
-        for(int j = 0; j < 3; j++)
-        {
-            //leaves
-            glPushMatrix();
-                glColor3f((double)i/20.0,n+.1,(double)i/20.0);
-                glTranslated(x[i],n,z[i]);
-                glRotated(-90, 1, 0, 0);
-                glutSolidCone(.5,.5,5,5);
-            glPopMatrix();
-            n+=.4;
-        }
+        
+        glPushMatrix();
+            glColor3f(.2, .9, .2);
+            glTranslated(x[i],.6,z[i]);
+            glutSolidSphere(1, 8, 4);
+        glPopMatrix();
+        
+
     }
     
-    draw 12 cubes with different colors
-    drawcube(75, 57, 2);
-    drawcube(-65, -12, 3);
-    drawcube(50, -50, 1);
-    drawcube(-56, 17, 2);
-    drawcube(67, 12, 3);
-    drawcube(-87, 32, 1);
-    drawcube(-26, 75, 2);
-    drawcube(57, 82, 3);
-    drawcube(-3, 12, 1);
-    drawcube(46, 35, 2);
-    drawcube(37, -2, 3);
-    glutSwapBuffers();
+    double a[] = {-2, 6, -5, -7, 5};
+    double b[] = {-6, -4, -2,  7,  4};
+    for(int i = 0; i < 5; i++)
+    {
+        //base log
+        glPushMatrix();
+            glColor3f(.2,.1,.1);
+            glTranslated(a[i],0,b[i]);
+            //glScaled(.3,3,.3);
+            glutSolidCube(1);
+        glPopMatrix();
+        
+    }
+    
+    //draw dino function
+    glPushMatrix();
+        glScaled(.4,.4,.4);
+        dino.drawDino();
+    glPopMatrix();
 
+    
     //pg 408 hidden surface
     glFlush();
-    glutSwapBuffers();
+    //glutSwapBuffers();
 
 }
 
-
-
-
-/*
-void drawcube(int x_offset, int z_offset, int color)
+int follow = 0;
+void keyboard(unsigned char key, int xmouse, int ymouse)
 {
-     this function draws a cube centerd at (x_offset, z_offset)
-    x and z _big are the back and rightmost points, x and z _small are
-    the front and leftmost points
-    float x_big = (float)x_offset + 5;
-    float z_big = (float)z_offset + 5;
-    float x_small = (float)x_offset - 5;
-    float z_small = (float)z_offset - 5;
-    switch(color)
+    switch(key)
     {
+            //all camera movement
+            //yaw, pitch, roll, slide
+            // yaw pitch and roll all change by 2 or -2
+            case 'a': cam.yaw(2.0);    break;
+            case 'd': cam.yaw(-2.0);     break;
+            case 'w': cam.pitch(2.0);  break;
+            case 's': cam.pitch(-2.0);   break;
+            case 'q': cam.roll(2.0);   break;
+            case 'e': cam.roll(-2.0);    break;
+            case 'D': cam.slide( .2, 0,  0);    break;
+            case 'S': cam.slide( 0,  0, .2);    break;
+            case 'A': cam.slide(-.2, 0,  0);   break;
+            case 'W': cam.slide( 0,  0,-.2);   break;
+            case 'E': cam.slide( 0, .2,  0);     break;
+            case 'Q': cam.slide( 0,-.2,  0);    break;
+            case 'f' : follow ? follow = false : follow = true;     break;
+
+            // all dino movement
+
+            case 'j': dino.turnAngle += 10; break;
+            case 'l': dino.turnAngle -= 10; break;
+            case 'i': dino.slide(0,  .2, 0); break;
+            case 'k': dino.slide(0, -.2, 0); break;
             
-    case 1:
-        glColor3f(1.0,0.0,0.0); // red
-        break;
-    case 2:
-        glColor3f(0.2,1.0,1.2); // light blue
-        break;
-    case 3:
-        glColor3f(0.0,0.0,1.0); // blue
-        break;
+
+            case 'u': sun.x = 13*cos(sunNum); sun.y = 13*sin(sunNum); sunNum += .2; break;
+            
+            case 27: exit(1);
     }
-    glBegin(GL_QUADS);
-        glVertex3f(x_small,10.0,z_big);  front
-        glVertex3f(x_small,0.0,z_big);
-        glVertex3f(x_big,0.0,z_big);
-        glVertex3f(x_big,10.0,z_big);
 
-        glVertex3f(x_big,10.0,z_small);  back
-        glVertex3f(x_big,0.0,z_small);
-        glVertex3f(x_small,0.0,z_small);
-        glVertex3f(x_small,10.0,z_small);
+    if(follow)
+        cam.set(cam.eye.x,cam.eye.y,cam.eye.z,dino.center.x*.2,dino.center.y*.2,dino.center.z*2,0,1,0);
 
-        glVertex3f(x_big,10.0,z_big);  right
-        glVertex3f(x_big,0.0,z_big);
-        glVertex3f(x_big,0.0,z_small);
-        glVertex3f(x_big,10.0,z_small);
+    glutPostRedisplay();
 
-        glVertex3f(x_small,10.0,z_small);  left
-        glVertex3f(x_small,0.0,z_small);
-        glVertex3f(x_small,0.0,z_big);
-        glVertex3f(x_small,10.0,z_big);
-
-        glVertex3f(x_small,10.0,z_big);  top
-        glVertex3f(x_big,10.0,z_big);
-        glVertex3f(x_big,10.0,z_small);
-        glVertex3f(x_small,10.0,z_small);
-
-        glVertex3f(x_small,0.0,z_small);  bottom
-        glVertex3f(x_big,0.0,z_small);
-        glVertex3f(x_big,0.0,z_big);
-        glVertex3f(x_small,0.0,z_big);
-    glEnd();
 }
-*/
-/*
-void display(void)
+
+
+void SpecialKeys(int key, int x, int y)
 {
-
+    switch (key)
+    {
+        case GLUT_KEY_RIGHT: dino.slide(0.2,0,0); break;
+        case GLUT_KEY_DOWN: dino.slide(0,0,0.2); break;
+        case GLUT_KEY_LEFT: dino.slide(-0.2,0,0); break;
+        case GLUT_KEY_UP: dino.slide(0,0,-0.2); break;
+    }
     
-    if (is_depth)
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    else
-        glClear(GL_COLOR_BUFFER_BIT);
+    if(follow)
+        cam.set(cam.eye.x,cam.eye.y,cam.eye.z,dino.center.x*.2,dino.center.y*.2,dino.center.z*2,0,1,0);
     
-
-     draw the floor
-    glBegin(GL_QUADS);
-        glColor3f(0.2f, 0.9f, 0.2f);
-        //glColor3f(0.0,0.0,0.0);
-        glVertex3f(-100.0, 0.0, -100.0);
-        glColor3f(0.2f, 0.9f, 0.2f);
-        //glColor3f(0.0,0.0,0.0);
-        glVertex3f(-100.0, 0.0, 100.0);
-        glColor3f(0.2f, 0.9f, 0.2f);
-        //glColor3f(0.0,0.0,0.0);
-        glVertex3f(100.0, 0.0, 100.0);
-        glColor3f(0.2f, 0.9f, 0.2f);
-        //glColor3f(0.0,0.0,0.0);
-        glVertex3f(100.0, 0.0, -100.0);
-    
-        //GLfloat cyan[] = {0.1f, 0.1f, 0.0f, 0.0f};
-        //glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);
-    glEnd();
-    draw 12 cubes with different colors
-    drawcube(75, 57, 2);
-    drawcube(-65, -12, 3);
-    drawcube(50, -50, 1);
-    drawcube(-56, 17, 2);
-    drawcube(67, 12, 3);
-    drawcube(-87, 32, 1);
-    drawcube(-26, 75, 2);
-    drawcube(57, 82, 3);
-    drawcube(-3, 12, 1);
-    drawcube(46, 35, 2);
-    drawcube(37, -2, 3);
-    glutSwapBuffers();
-    
-    //glutSolidSphere(1.0, 25, 25);
- 
-    
+    glutPostRedisplay();
 }
-*/
+void init(void)
+{
+    glClearColor(0.0, 0.6, 0.8, 1.0); // background blue
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_COLOR_MATERIAL);
+    glViewport(0, 0, 640, 430);
+    //eye, look, up
+    cam.setShape(30.0, 64.0/48.0, .5, 100.0);
+    cam.set(5,5,5,0,0,0,0,1,0);
+    dino.set(3,0,0,0,0,0,0,1,0);
+   
+}
+
 int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-    glutInitWindowSize(640, 480);
-    glutInitWindowPosition(640, 0);
+    glutInitWindowSize(800, 500);
+    glutInitWindowPosition(680, 480);
     glutCreateWindow("3D dino");
     glutDisplayFunc(display);
-    //glutKeyboardFunc(keyboard);
-    //glutSpecialFunc(SpecailKeys);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(SpecialKeys);
     init();
-    //dino.set(3,0,0,0,0,0,0,1,0);
     glutMainLoop();
 }
 
